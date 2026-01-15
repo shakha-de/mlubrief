@@ -1,3 +1,18 @@
+# Language Option
+
+The `mlubrief2` class now supports an `english` option to switch all hardcoded field labels and address text to English. By default, all labels are in German. To use English, load the class as follows:
+
+```latex
+\documentclass[english]{mlubrief2}
+```
+
+This will change the following fields to English:
+
+- Reference field labels ("Ihre Zeichen", "Ihr Schreiben vom", "Unsere Zeichen", "Datum")
+- Footer fields ("Hausanschrift", "Tel", "e-mail", "Internet")
+- University address in the header
+
+If the `english` option is not set, the class defaults to German labels.
 # MLU Brief LaTeX Vorlage
 
 siehe https://www2.informatik.uni-halle.de/mlubrief/
