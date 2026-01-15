@@ -1,5 +1,12 @@
 \NeedsTeXFormat{LaTeX2e}
+
+% Option: english (default is German)
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=mlubrief2, prefix=mlubrief@}
+\DeclareBoolOption[false]{english}
+\ProcessKeyvalOptions*  % process class options
 \ProvidesClass{mlubrief2}[2026/01/12 MLU Halle-Wittenberg Letter Class]
+
 
 % Load base class
 \LoadClass[parskip=half,fontsize=11pt,foldmarks=hp,backaddress=false]{scrlttr2}
@@ -7,16 +14,23 @@
 % Modern packages
 \RequirePackage[utf8]{inputenc}
 \RequirePackage[T1]{fontenc}
-\RequirePackage[ngerman]{babel}
+\ifmlubrief@english
+      \RequirePackage[english]{babel}
+\else
+      \RequirePackage[ngerman]{babel}
+\fi
 \RequirePackage{tikz}
 \usetikzlibrary{calc}
 \RequirePackage[left=3cm,right=2cm,bottom=3cm,top=2cm]{geometry}
 \RequirePackage{graphicx}
 \RequirePackage{xcolor}
 \RequirePackage{atbegshi}
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage{enumitem}
 
 % Define faculty color (CMYK: teal/green for university)
 \definecolor{mlugreen}{cmyk}{1,0,0.79,0.60}
+\definecolor{natfak3}{HTML}{368429}
 
 % Letter positioning
 \setplength{toaddrvpos}{50.8mm}
@@ -32,6 +46,7 @@
 \newcommand{\SenderName}{}
 \newcommand{\SenderAddress}{}
 \newcommand{\SenderPhone}{}
+\newcommand{\SenderFax}{}
 \newcommand{\SenderEmail}{}
 \newcommand{\SenderURL}{}
 \newcommand{\SenderDepartment}{}
@@ -39,15 +54,46 @@
 \newcommand{\SenderChair}{}
 \newcommand{\SenderDate}{\today}
 
+\setkomavar{signature}{}
+
+
 % Reference field variables
 \newcommand{\RefYourRef}{}
 \newcommand{\RefYourMail}{}
 \newcommand{\RefMyRef}{}
 
+% Language-dependent field labels
+\ifmlubrief@english
+      % English labels
+      \newcommand{\mlulabelYourRef}{Your Ref}
+      \newcommand{\mlulabelYourMail}{Your Letter of}
+      \newcommand{\mlulabelMyRef}{Our Ref}
+      \newcommand{\mlulabelDate}{Date}
+      \newcommand{\mlulabelAddress}{Address}
+      \newcommand{\mlulabelPhone}{Phone}
+      \newcommand{\mlulabelFax}{Fax}
+      \newcommand{\mlulabelEmail}{e-mail}
+      \newcommand{\mlulabelInternet}{Internet}
+      \newcommand{\mlulabelUniv}{Martin-Luther-University Halle-Wittenberg, 06099 Halle (Saale)}
+\else
+      % German labels
+      \newcommand{\mlulabelYourRef}{Ihre~Zeichen}
+      \newcommand{\mlulabelYourMail}{Ihr~Schreiben~vom}
+      \newcommand{\mlulabelMyRef}{Unsere~Zeichen}
+      \newcommand{\mlulabelDate}{Datum}
+      \newcommand{\mlulabelAddress}{Hausanschrift:}
+      \newcommand{\mlulabelPhone}{Tel}
+      \newcommand{\mlulabelFax}{Telefax}
+      \newcommand{\mlulabelEmail}{e-mail:}
+      \newcommand{\mlulabelInternet}{Internet:}
+      \newcommand{\mlulabelUniv}{Martin-Luther-Universität~Halle-Wittenberg,~06099~Halle~(Saale)}
+\fi
+
 % Commands to set sender information
 \newcommand{\setname}[1]{\renewcommand{\SenderName}{#1}\setkomavar{fromname}{#1}}
 \newcommand{\setaddress}[1]{\renewcommand{\SenderAddress}{#1}\setkomavar{fromaddress}{#1}}
 \newcommand{\setphone}[1]{\renewcommand{\SenderPhone}{#1}\setkomavar{fromphone}{#1}}
+\newcommand{\setfax}[1]{\renewcommand{\SenderFax}{#1}\setkomavar{fromfax}{#1}}
 \newcommand{\setemail}[1]{\renewcommand{\SenderEmail}{#1}\setkomavar{fromemail}{#1}}
 \newcommand{\seturl}[1]{\renewcommand{\SenderURL}{#1}\setkomavar{fromurl}{#1}}
 \newcommand{\setdepartment}[1]{\renewcommand{\SenderDepartment}{#1}}
@@ -72,11 +118,11 @@
     \draw[line width=0.5pt] (115mm,-22mm) -- (210mm,-22mm);
     
     % Faculty colored square
-    \fill[mlugreen] (134mm,-26mm) rectangle (139mm,-31mm);
+    \fill[natfak3] (134mm,-26mm) rectangle (139mm,-31mm);
     
     % Return address line
     \draw (25mm,-50.8mm-3pt) node [below right,inner sep=0pt]
-          {\fontsize{7pt}{9pt}\selectfont\sffamily Martin-Luther-Universität~Halle-Wittenberg,~06099~Halle~(Saale)};
+          {\fontsize{7pt}{9pt}\selectfont\sffamily \mlulabelUniv};
     
     % Department/Institute info
     \draw (144mm,-26mm) node (arbeitsgruppe) [below right,inner sep=0pt] {%
@@ -84,7 +130,8 @@
       \begin{tabular}{@{}l@{}}
         \ifx\SenderDepartment\empty\else\SenderDepartment\\[6pt]\fi
         \ifx\SenderInstitute\empty\else\SenderInstitute\\[6pt]\fi
-        \ifx\SenderChair\empty\else\SenderChair\fi
+        \ifx\SenderChair\empty\else\SenderChair\\[6pt]\fi
+        \ifx\SenderName\empty\else\SenderName\fi
       \end{tabular}};
     
     % Vertical line next to seal
@@ -105,13 +152,13 @@
     
     % Reference field labels
     \draw (25mm,-103mm) node [above right,inner sep=0pt]
-          {\fontsize{7pt}{9pt}\selectfont\sffamily Ihre~Zeichen};
+          {\fontsize{7pt}{9pt}\selectfont\sffamily \mlulabelYourRef};
     \draw (60mm,-103mm) node [above right,inner sep=0pt]
-          {\fontsize{7pt}{9pt}\selectfont\sffamily Ihr~Schreiben~vom};
+          {\fontsize{7pt}{9pt}\selectfont\sffamily \mlulabelYourMail};
     \draw (100mm,-103mm) node [above right,inner sep=0pt]
-          {\fontsize{7pt}{9pt}\selectfont\sffamily Unsere~Zeichen};
+          {\fontsize{7pt}{9pt}\selectfont\sffamily \mlulabelMyRef};
     \draw (140mm,-103mm) node [above right,inner sep=0pt]
-          {\fontsize{7pt}{9pt}\selectfont\sffamily Datum};
+          {\fontsize{7pt}{9pt}\selectfont\sffamily \mlulabelDate};
     
     % Reference field values
     \draw (25mm,-103mm-6pt) node [below right,inner sep=0pt] {\RefYourRef};
@@ -132,28 +179,31 @@
     % Vertical separator lines (4 columns)
     \draw[line width=0.5pt] (30mm,15mm) -- (30mm,0mm);
     \draw[line width=0.5pt] (70mm,15mm) -- (70mm,0mm);
-    \draw[line width=0.5pt] (110mm,15mm) -- (110mm,0mm);
+    \draw[line width=0.5pt] (100mm,15mm) -- (100mm,0mm);
     \draw[line width=0.5pt] (150mm,15mm) -- (150mm,0mm);
     
     % Column 1: Address
     \draw (33mm,15mm) node [below right,inner sep=0pt]
           {\fontsize{7pt}{9pt}\selectfont\sffamily
-           \begin{tabular}{@{}l@{}}Hausanschrift:\\\SenderAddress\end{tabular}};
-    
-    % Column 2: Phone
+           \begin{tabular}{@{}l@{}}\mlulabelAddress\\\SenderAddress\end{tabular}};
+
+    % Column 2: Phone and Fax
     \draw (73mm,15mm) node [below right,inner sep=0pt]
           {\fontsize{7pt}{9pt}\selectfont\sffamily
-           \begin{tabular}{@{}l@{}}Tel\\\SenderPhone\end{tabular}};
-    
-    % Column 3: Email
-    \draw (113mm,15mm) node [below right,inner sep=0pt]
+           \begin{tabular}{@{}l@{}}\mlulabelPhone\\\SenderPhone\end{tabular}};
+    \draw (73mm,8mm) node [below right,inner sep=0pt]
           {\fontsize{7pt}{9pt}\selectfont\sffamily
-           \begin{tabular}{@{}l@{}}e-mail:\\\SenderEmail\end{tabular}};
-    
+           \begin{tabular}{@{}l@{}}\mlulabelFax\\\SenderFax\end{tabular}};
+
+    % Column 3: Email
+    \draw (103mm,15mm) node [below right,inner sep=0pt]
+          {\fontsize{7pt}{9pt}\selectfont\sffamily
+           \begin{tabular}{@{}l@{}}\mlulabelEmail\\\href{mailto:\SenderEmail}{\SenderEmail}\end{tabular}};
+
     % Column 4: URL
     \draw (153mm,15mm) node [below right,inner sep=0pt]
           {\fontsize{7pt}{9pt}\selectfont\sffamily
-           \begin{tabular}{@{}l@{}}Internet:\\\SenderURL\end{tabular}};
+           \begin{tabular}{@{}l@{}}\mlulabelInternet\\\SenderURL\end{tabular}};
   \end{tikzpicture}%
 }}
 
